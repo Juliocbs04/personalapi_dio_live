@@ -1,6 +1,7 @@
 package one.digitalinnovation.personapi.service;
 
 import one.digitalinnovation.personapi.dto.MessageResponseDTO;
+import one.digitalinnovation.personapi.dto.request.PersonDTO;
 import one.digitalinnovation.personapi.entity.Person;
 import one.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,11 @@ public class PersonService {
     @Autowired
     PersonRepository personRepository;
 
-    public MessageResponseDTO createPerson(Person person){
-        Person savedPerson= personRepository.save(person);
+    public MessageResponseDTO createPerson(PersonDTO personDTO){
+        PersonDTO savedPersonDTO= personRepository.save(personDTO);
         return MessageResponseDTO.
                 builder()
-                .message("Create Person with ID"+savedPerson.getId())
+                .message("Create Person with ID"+savedPersonDTO.getId())
                 .build();
     }
 }
