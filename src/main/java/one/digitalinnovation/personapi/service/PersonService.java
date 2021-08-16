@@ -8,10 +8,8 @@ import one.digitalinnovation.personapi.mapper.PersonMapper;
 import one.digitalinnovation.personapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +23,7 @@ public class PersonService {
        Person personToSave = personMapper.toModel(personDTO);
 
        Person savedPerson= personRepository.save(personToSave);
-        return MessageResponseDTO.
-                builder()
-                .message("Create Person with ID"+savedPerson.getId())
-                .build();
+       return createMessageResponse(savedPerson.getId(), "Saved Person with ID: ");
     }
 
 
@@ -40,9 +35,33 @@ public class PersonService {
     }
 
     public PersonDTO findByID(Long id) throws PersonNotFoundException {
-        Person person = personRepository.findById(id).orElseThrow(()-> new PersonNotFoundException(id));
+        Person person = verifyIfExists(id);
         // Optional<Person> optionalPerson = personRepository.findById(id);
         return personMapper.toDTO(person);
 
+    }
+    public Person verifyIfExists(Long id) throws PersonNotFoundException {
+        return personRepository.findById(id).orElseThrow(()-> new PersonNotFoundException(id));
+    }
+
+    public void deletePerson(Long id) throws PersonNotFoundException {
+        verifyIfExists(id);
+
+        personRepository.deleteById(id);
+    }
+
+    public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
+        verifyIfExists(id);
+        Person personToUpdate = personMapper.toModel(personDTO);
+
+        Person updatedPerson= personRepository.save(personToUpdate);
+        return createMessageResponse(updatedPerson.getId(), "Updated Person with ID: ");
+    }
+
+    private MessageResponseDTO createMessageResponse(Long id, String message) {
+        return MessageResponseDTO.
+                builder()
+                .message(message+id)
+                .build();
     }
 }
